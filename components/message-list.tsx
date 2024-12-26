@@ -14,9 +14,9 @@ export function MessageList({ messages, scrollAreaRef }: MessageListProps) {
     <Card className="flex-grow mb-4 p-4">
       <ScrollArea className="h-[calc(100vh-12rem)]" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div
-              key={`${message.timestamp.getTime()}-${index}`}
+              key={message.id}
               className="bg-secondary p-3 rounded-lg"
             >
               <p className="text-sm text-muted-foreground mb-1">

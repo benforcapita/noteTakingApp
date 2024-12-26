@@ -11,15 +11,16 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { toast } from '@/components/ui/use-toast';
+import { Message } from '@/types/chat';
 
 interface ActionDrawerProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSummarize: () => void;
   isSummarizing: boolean;
-  messages: { content: string; timestamp: Date }[];
+  messages: Message[];
   onClear: () => void;
-  onImportMessages: (messages: { content: string; timestamp: Date }[]) => void;
+  onImportMessages: (messages: Message[]) => void;
 }
 
 export function ActionDrawer({
@@ -72,12 +73,7 @@ export function ActionDrawer({
           if (typeof content === 'string') {
             const importedMessages = JSON.parse(content);
             if (Array.isArray(importedMessages)) {
-              // Convert string dates back to Date objects
-              const messagesWithDates = importedMessages.map(msg => ({
-                ...msg,
-                timestamp: new Date(msg.timestamp),
-              }));
-              onImportMessages(messagesWithDates);
+              onImportMessages(importedMessages);
               toast({
                 title: "Notes imported",
                 description: "Your meeting notes have been imported successfully.",

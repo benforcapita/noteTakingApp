@@ -9,11 +9,7 @@ import { SettingsDrawer } from './settings-drawer';
 import { ActionDrawer } from './action-drawer';
 import { SummaryModal } from './summary-modal';
 import { toast } from '@/components/ui/use-toast';
-
-interface Message {
-  content: string;
-  timestamp: Date;
-}
+import { Message } from '@/types/chat';
 
 export function ChatInterface() {
   const [input, setInput] = useState('');
@@ -25,7 +21,11 @@ export function ChatInterface() {
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
 
   const addMessage = (content: string) => {
-    const newMessage = { content, timestamp: new Date() };
+    const newMessage: Message = {
+      id: crypto.randomUUID(),
+      content,
+      timestamp: new Date().toISOString(),
+    };
     setMessages(prev => [...prev, newMessage]);
     setTimeout(() => {
       scrollAreaRef.current?.scrollTo({
@@ -95,7 +95,13 @@ export function ChatInterface() {
   };
 
   const handleImportMessages = (importedMessages: Message[]) => {
-    setMessages(importedMessages);
+    // Ensure imported messages have proper IDs and timestamp format
+    const validatedMessages = importedMessages.map(msg => ({
+      ...msg,
+      id: msg.id || crypto.randomUUID(),
+      timestamp: msg.timestamp || new Date().toISOString(),
+    }));
+    setMessages(validatedMessages);
   };
 
   return (
