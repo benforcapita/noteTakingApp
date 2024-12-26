@@ -9,9 +9,10 @@ interface MessageInputProps {
   input: string;
   setInput: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  className?: string;
 }
 
-export function MessageInput({ input, setInput, onSubmit }: MessageInputProps) {
+export function MessageInput({ input, setInput, onSubmit, className }: MessageInputProps) {
   const [isHebrew, setIsHebrew] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export function MessageInput({ input, setInput, onSubmit }: MessageInputProps) {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex gap-2">
+    <form onSubmit={onSubmit} className={`flex gap-2 ${className || ''}`}>
       <Textarea
         value={input}
         onChange={(e) => setInput(e.target.value)}

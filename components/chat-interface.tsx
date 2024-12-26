@@ -128,7 +128,7 @@ export function ChatInterface() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-1 pr-4 border rounded-lg p-4 bg-background mb-4" ref={scrollAreaRef}>
           <MessageList messages={messages} />
         </ScrollArea>
 
