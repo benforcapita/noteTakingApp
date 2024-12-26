@@ -15,19 +15,19 @@ export async function summarizeNotes(notes: string[]): Promise<string> {
     });
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
-          content: 'You are a professional meeting notes summarizer. Create a clear, concise, and well-structured summary of the provided meeting notes. Important: Maintain the same language as the input notes - if the notes are in Hebrew, summarize in Hebrew, if in English, summarize in English, etc.',
+          content: 'You are a professional meeting notes summarizer. Create a clear, concise summary of the provided notes. Maintain the original language.',
         },
         {
           role: 'user',
-          content: `Please summarize these meeting notes in a professional format, maintaining the same language as the original notes:\n\n${notes.join('\n\n')}`,
+          content: `Please summarize these notes:\n\n${notes.join('\n\n')}`,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 1000,
+      temperature: 0.5,
+      max_tokens: 500,
     });
 
     if (!response.choices[0].message.content) {
