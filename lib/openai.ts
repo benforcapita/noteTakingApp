@@ -23,7 +23,16 @@ export async function summarizeNotes(notes: string[]): Promise<string> {
         },
         {
           role: 'user',
-          content: `Please summarize these notes:\n\n${notes.join('\n\n')}`,
+          content: `Please provide a clear and concise summary of these meeting notes, highlighting:
+1. Key decisions made
+2. Action items or tasks assigned
+3. Important discussion points
+4. Next steps or follow-ups
+
+Please provide the summary in the same language(s) as the input notes.
+
+Notes to summarize:
+${notes.join('\n\n')}`,
         },
       ],
       temperature: 0.5,

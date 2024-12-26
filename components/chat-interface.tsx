@@ -19,6 +19,7 @@ export function ChatInterface() {
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [summary, setSummary] = useState('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
 
   const addMessage = (content: string) => {
     const newMessage: Message = {
@@ -104,6 +105,14 @@ export function ChatInterface() {
     setMessages(validatedMessages);
   };
 
+  const handleDeleteMessage = (id: string) => {
+    setMessages(prev => prev.filter(message => message.id !== id));
+  };
+
+  const toggleDeleteMode = () => {
+    setIsDeleteMode(prev => !prev);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
@@ -124,12 +133,18 @@ export function ChatInterface() {
               messages={messages}
               onClear={handleClear}
               onImportMessages={handleImportMessages}
+              isDeleteMode={isDeleteMode}
+              onToggleDeleteMode={toggleDeleteMode}
             />
           </div>
         </div>
 
         <ScrollArea className="flex-1 pr-4 border rounded-lg p-4 bg-background mb-4" ref={scrollAreaRef}>
-          <MessageList messages={messages} />
+          <MessageList 
+            messages={messages} 
+            onDeleteMessage={handleDeleteMessage}
+            isDeleteMode={isDeleteMode}
+          />
         </ScrollArea>
 
         <MessageInput input={input} setInput={setInput} onSubmit={handleSubmit} />

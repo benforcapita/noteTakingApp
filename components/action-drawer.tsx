@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/sheet';
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
+import { cn } from '@/lib/utils';
 
 interface ActionDrawerProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ interface ActionDrawerProps {
   messages: Message[];
   onClear: () => void;
   onImportMessages: (messages: Message[]) => void;
+  isDeleteMode: boolean;
+  onToggleDeleteMode: () => void;
 }
 
 export function ActionDrawer({
@@ -31,6 +34,8 @@ export function ActionDrawer({
   messages,
   onClear,
   onImportMessages,
+  isDeleteMode,
+  onToggleDeleteMode,
 }: ActionDrawerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,6 +154,17 @@ export function ActionDrawer({
             >
               <Upload className="h-4 w-4 mr-2" />
               Import Notes
+            </Button>
+            <Button
+              variant="outline"
+              onClick={onToggleDeleteMode}
+              className={cn(
+                "w-full justify-center",
+                isDeleteMode && "bg-red-100 hover:bg-red-200 text-red-600"
+              )}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {isDeleteMode ? 'Exit Delete Mode' : 'Delete Messages'}
             </Button>
             <Button
               onClick={handleClear}
