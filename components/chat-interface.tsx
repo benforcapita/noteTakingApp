@@ -10,6 +10,7 @@ import { ActionDrawer } from './action-drawer';
 import { SummaryModal } from './summary-modal';
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
+import { processNotes } from '@/lib/openai';
 
 export function ChatInterface() {
   const [input, setInput] = useState('');
@@ -20,6 +21,7 @@ export function ChatInterface() {
   const [summary, setSummary] = useState('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const [mode, setMode] = useState<'summarize' | 'organize'>('summarize');
 
   const addMessage = (content: string) => {
     const newMessage: Message = {
@@ -47,43 +49,26 @@ export function ChatInterface() {
   const handleSummarize = async () => {
     if (messages.length === 0) {
       toast({
-        title: "No messages to summarize",
-        description: "Please add some meeting notes first.",
+        title: "No messages to process",
+        description: "Please add some notes first.",
         variant: "destructive",
       });
       return;
     }
 
     setIsSummarizing(true);
+    setSummary('');
+
     try {
-      const response = await fetch('/api/summarize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ notes: messages.map(m => m.content) }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to summarize notes');
-      }
-
-      const data = await response.json();
-      setSummary(data.summary);
+      const messageContents = messages.map(m => m.content);
+      const result = await processNotes(messageContents, mode);
+      setSummary(result);
       setIsSummaryModalOpen(true);
-      setIsActionsOpen(false);
-      toast({
-        title: "Summary generated",
-        description: "Your meeting notes have been successfully summarized.",
-        variant: "default",
-        className: "bg-green-500 text-white",
-      });
     } catch (error) {
-      console.error('Error summarizing notes:', error);
+      console.error('Processing error:', error);
       toast({
-        title: "Error summarizing notes",
-        description: error instanceof Error ? error.message : 'Failed to summarize notes',
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to process notes",
         variant: "destructive",
       });
     } finally {
@@ -135,6 +120,8 @@ export function ChatInterface() {
               onImportMessages={handleImportMessages}
               isDeleteMode={isDeleteMode}
               onToggleDeleteMode={toggleDeleteMode}
+              mode={mode}
+              onModeChange={setMode}
             />
           </div>
         </div>
@@ -151,8 +138,9 @@ export function ChatInterface() {
 
         <SummaryModal
           isOpen={isSummaryModalOpen}
-          onClose={() => setIsSummaryModalOpen(false)}
+          onOpenChange={setIsSummaryModalOpen}
           summary={summary}
+          mode={mode}
         />
       </div>
     </div>

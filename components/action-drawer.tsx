@@ -13,6 +13,13 @@ import {
 import { toast } from '@/components/ui/use-toast';
 import { Message } from '@/types/chat';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface ActionDrawerProps {
   isOpen: boolean;
@@ -24,6 +31,8 @@ interface ActionDrawerProps {
   onImportMessages: (messages: Message[]) => void;
   isDeleteMode: boolean;
   onToggleDeleteMode: () => void;
+  mode: 'summarize' | 'organize';
+  onModeChange: (mode: 'summarize' | 'organize') => void;
 }
 
 export function ActionDrawer({
@@ -36,6 +45,8 @@ export function ActionDrawer({
   onImportMessages,
   isDeleteMode,
   onToggleDeleteMode,
+  mode,
+  onModeChange,
 }: ActionDrawerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -128,54 +139,64 @@ export function ActionDrawer({
         <SheetHeader>
           <SheetTitle>Actions</SheetTitle>
         </SheetHeader>
-        <div className="space-y-4 pt-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Available Actions</h3>
-            <Button
-              onClick={onSummarize}
-              disabled={isSummarizing || messages.length === 0}
-              className="w-full"
-            >
-              {isSummarizing ? 'Generating Summary...' : 'Summarize Notes'}
-            </Button>
-            <Button
-              onClick={handleExport}
-              disabled={messages.length === 0}
-              variant="outline"
-              className="w-full"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export Notes
-            </Button>
-            <Button
-              onClick={handleImportClick}
-              variant="outline"
-              className="w-full"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Import Notes
-            </Button>
-            <Button
-              variant="outline"
-              onClick={onToggleDeleteMode}
-              className={cn(
-                "w-full justify-center",
-                isDeleteMode && "bg-red-100 hover:bg-red-200 text-red-600"
-              )}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {isDeleteMode ? 'Exit Delete Mode' : 'Delete Messages'}
-            </Button>
-            <Button
-              onClick={handleClear}
-              disabled={messages.length === 0}
-              variant="outline"
-              className="w-full text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Clear All Notes
-            </Button>
+        <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium">Processing Mode</label>
+            <Select value={mode} onValueChange={onModeChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="summarize">Summarize</SelectItem>
+                <SelectItem value="organize">Organize</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+          <Button
+            onClick={onSummarize}
+            disabled={messages.length === 0 || isSummarizing}
+            className="w-full"
+          >
+            <Wand2 className="mr-2 h-4 w-4" />
+            {mode === 'summarize' ? 'Summarize Notes' : 'Organize Notes'}
+          </Button>
+          <Button
+            onClick={handleExport}
+            disabled={messages.length === 0}
+            variant="outline"
+            className="w-full"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export Notes
+          </Button>
+          <Button
+            onClick={handleImportClick}
+            variant="outline"
+            className="w-full"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Import Notes
+          </Button>
+          <Button
+            variant="outline"
+            onClick={onToggleDeleteMode}
+            className={cn(
+              "w-full justify-center",
+              isDeleteMode && "bg-red-100 hover:bg-red-200 text-red-600"
+            )}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            {isDeleteMode ? 'Exit Delete Mode' : 'Delete Messages'}
+          </Button>
+          <Button
+            onClick={handleClear}
+            disabled={messages.length === 0}
+            variant="outline"
+            className="w-full text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear All Notes
+          </Button>
         </div>
         <input
           type="file"
